@@ -1,8 +1,9 @@
 #include "rasterizer.h"
 #include <iostream>
 
-Rasterizer::Rasterizer(int w, int h, PhongShader& s): width(w), height(h), shader(s), image() {
-    TGAImage image(width, height, TGAImage::RGB);
+Rasterizer::Rasterizer(int w, int h, Shader* s): width(w), height(h), shader(s){
+    this->image = TGAImage(w, h, TGAImage::RGB);
+    zBuf.resize(w*h);
 }
 
 bool insideTriangle(float x, float y, Eigen::Vector4f position[]){
@@ -60,6 +61,10 @@ Eigen::Vector3f toVector3(Eigen::Vector4f v){
 void Rasterizer::rasterizeWorld(std::vector<Triangle*> &triangleList){
     Eigen::Matrix4f PositionTransform = viewport * projection * modelView;
     Eigen::Matrix4f NormalTransform = modelView.inverse().transpose();
+    // std::cout << viewport << std::endl; 
+    // std::cout << projection << std::endl; 
+    // std::cout << modelView << std::endl;
+    // std::cout << PositionTransform << std::endl;
     // Eigen::Vector3f color = {148.0, 121.0, 92.0};
     for(const auto& t:triangleList){
         Triangle tt = *t; // t is a const reference, cannot be modified
@@ -109,13 +114,12 @@ void Rasterizer::rasterizeTriangle(Triangle& t, std::vector<Eigen::Vector4f> wor
     
     for(int x = minX; x <= maxX; x++){
         for(int y = minY; y <= maxY; y++){
+            // std::cout << x << ' ' << y << ' ' << t.Position[0][0] << ' ' << t.Position[0][1] << ' ' << getIdx(x,y) << std::endl;
             if(insideTriangle(x+0.5f, y+0.5f, t.Position)){
                 float alpha, beta, gamma;
                 std::tie(alpha, beta, gamma) = getBarycentricCoord(x+0.5f, y+0.5f, t.Position);
-                
-                float z_screen = (alpha*t.Position[0][2]/t.Position[0][3] + beta*t.Position[1][2]/t.Position[1][3] + gamma*t.Position[2][2]/t.Position[2][3]) / (alpha/t.Position[0][3] + beta/t.Position[1][3] + gamma/t.Position[2][3]);
+                float z_screen = -(alpha*t.Position[0][2]/t.Position[0][3] + beta*t.Position[1][2]/t.Position[1][3] + gamma*t.Position[2][2]/t.Position[2][3]) / (alpha/t.Position[0][3] + beta/t.Position[1][3] + gamma/t.Position[2][3]);
                 if(z_screen < zBuf[getIdx(x,y)]){
-                    std::cout << "ethan 2" << std::endl;
                     zBuf[getIdx(x,y)] = z_screen;
                     
                     auto colorInterpolated = interpolate(alpha, beta, gamma, t.Color[0], t.Color[1], t.Color[2]);
@@ -123,16 +127,16 @@ void Rasterizer::rasterizeTriangle(Triangle& t, std::vector<Eigen::Vector4f> wor
                     auto texInterpolated = interpolate(alpha, beta, gamma, t.Tex[0], t.Tex[1], t.Tex[2]);
                     auto worldSpacePositionInterpolated = interpolate(alpha, beta, gamma, worldSpacePosition[0], worldSpacePosition[1], worldSpacePosition[2]);
                     
-                    shader.payload.kd = colorInterpolated;
-                    shader.payload.color = colorInterpolated;
-                    shader.payload.normal = toVector3(normalInterpolated);
-                    shader.payload.position = toVector3(worldSpacePositionInterpolated);
-                    shader.payload.texPosition = texInterpolated;
+                    shader->payload.kd = colorInterpolated;
+                    shader->payload.color = colorInterpolated;
+                    shader->payload.normal = toVector3(normalInterpolated);
+                    shader->payload.position = toVector3(worldSpacePositionInterpolated);
+                    shader->payload.texPosition = texInterpolated;
                     
-                    auto pixelColor = shader.performShading();
-                    TGAColor c(static_cast<unsigned char>(pixelColor[0]), 
-                               static_cast<unsigned char>(pixelColor[0]), 
-                               static_cast<unsigned char>(pixelColor[0]), 255);
+                    auto pixelColor = shader->performShading();
+                    TGAColor c = TGAColor(static_cast<unsigned char>(pixelColor[0]), 
+                               static_cast<unsigned char>(pixelColor[1]), 
+                               static_cast<unsigned char>(pixelColor[2]), 255);
                     image.set(x, y, c, 1.0);
                 }
             }
@@ -141,21 +145,23 @@ void Rasterizer::rasterizeTriangle(Triangle& t, std::vector<Eigen::Vector4f> wor
 }
 
 
-void Rasterizer::setModelView(const Eigen::Matrix4f& m){
+void Rasterizer::setModelView(Eigen::Matrix4f m){
     modelView = m;
 }
 
 
-void Rasterizer::setProjection(const Eigen::Matrix4f& p){
+void Rasterizer::setProjection(Eigen::Matrix4f p){
     projection = p;
 }
 
 
-void Rasterizer::setViewport(const Eigen::Matrix4f& v){
+void Rasterizer::setViewport(Eigen::Matrix4f v){
     viewport = v;
 }
 
 void Rasterizer::saveResult(std::string path){
+    
+    image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
     image.write_tga_file(path.c_str());
 }
 

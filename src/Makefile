@@ -6,7 +6,7 @@ TARGET = drawTriangle
 
 all: $(TARGET)
 
-SRCS := $(filter-out drawLine.cpp, $(wildcard *.cpp))
+SRCS := $(filter-out drawLine.cpp model.cpp, $(wildcard *.cpp))
 
 OBJS = $(SRCS:.cpp=.o)
 

@@ -3,6 +3,7 @@
 
 #include "tgaimage.h"
 #include <vector>
+#include <string>
 #include <Eigen/Dense>
 
 
@@ -23,6 +24,7 @@ struct ShaderPayload{
     Eigen::Vector3f ambientLightIntensity {10, 10, 10};
     Eigen::Vector3f eyePosition {0, 0, 10};
     float p = 150;
+    float angle = 80.0;
     
     Eigen::Vector3f color;
     Eigen::Vector3f position;
@@ -33,31 +35,47 @@ struct ShaderPayload{
 };
 
 
-class PhongShader{
+
+class Shader{
     public:
-        PhongShader(struct ShaderPayload &payload) : payload(payload) {};
-        Eigen::Vector3f performShading();
+        Shader(struct ShaderPayload &payload) : payload(payload) {};
+        virtual Eigen::Vector3f performShading() = 0;
+        virtual std::string getName() = 0;
         struct ShaderPayload& payload;        
 };
 
 
-class TextureShader : public PhongShader{
+class PhongShader : public Shader{
     public:
-        TextureShader(struct ShaderPayload &payload);
+        PhongShader(struct ShaderPayload &payload) : Shader(payload) {};
+        Eigen::Vector3f performShading();
+        std::string getName() { return "phong shader";}
 };
 
 
-class BumpShader : public PhongShader{
+class TextureShader : public Shader{
     public:
-        BumpShader(struct ShaderPayload &payload);
-        Eigen::Vector3f performShading() {return payload.normal * 255.0;};
+        TextureShader(struct ShaderPayload &payload) : Shader(payload) {};
+        Eigen::Vector3f performShading();
+        std::string getName() { return "texture shader";}
 };
 
 
-class DisplacementShader : public PhongShader{
+class BumpShader : public Shader{
     public:
-        DisplacementShader(struct ShaderPayload &payload);
+        BumpShader(struct ShaderPayload &payload) : Shader(payload) {};
+        Eigen::Vector3f performShading();
+        std::string getName() { return "bump shader";}
 };
+
+
+class DisplacementShader : public Shader{
+    public:
+        DisplacementShader(struct ShaderPayload &payload) : Shader(payload) {};
+        Eigen::Vector3f performShading();
+        std::string getName() { return "displacement shader";}
+};
+
 
 
 #endif

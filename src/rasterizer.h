@@ -10,13 +10,13 @@
 
 class Rasterizer{
     public:
-        Rasterizer(int w, int h, PhongShader& s);
+        Rasterizer(int w, int h, Shader* s);
         void rasterizeWorld(std::vector<Triangle*> &triangleList);
         void rasterizeTriangle(Triangle& t, std::vector<Eigen::Vector4f> worldSpacePosition);
 
-        void setModelView(const Eigen::Matrix4f& m);
-        void setProjection(const Eigen::Matrix4f& p);
-        void setViewport(const Eigen::Matrix4f& v);
+        void setModelView(Eigen::Matrix4f m);
+        void setProjection(Eigen::Matrix4f p);
+        void setViewport(Eigen::Matrix4f v);
         
         void saveResult(std::string path);
         
@@ -29,7 +29,7 @@ class Rasterizer{
         TGAImage image;
         std::vector<float> zBuf;
         
-        PhongShader& shader;
+        Shader* shader;
         
         int getIdx(int x, int y);
 };
