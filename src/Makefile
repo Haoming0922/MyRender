@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++11 -O2
+CXXFLAGS = -Wall -Wextra -pedantic -std=c++11 -O2 -I/usr/include/eigen-3.4.0
 LDLIBS = -lm
 
 TARGET = drawTriangle

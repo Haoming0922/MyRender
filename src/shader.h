@@ -3,7 +3,7 @@
 
 #include "tgaimage.h"
 #include <vector>
-#include <eigen/Eigen/Eigen>
+#include <Eigen/Dense>
 
 
 struct light{
@@ -28,35 +28,35 @@ struct ShaderPayload{
     Eigen::Vector3f position;
     Eigen::Vector3f normal;
     
-    TGAImage texture;
+    TGAImage* texture;
     Eigen::Vector2f texPosition;
 };
 
 
 class PhongShader{
     public:
-        PhongShader(struct& payload) : ShaderPayload(payload) {};
+        PhongShader(struct ShaderPayload &payload) : payload(payload) {};
         Eigen::Vector3f performShading();
-        struct ShaderPayload;        
+        struct ShaderPayload& payload;        
 };
 
 
 class TextureShader : public PhongShader{
     public:
-        TextureShader(struct& payload);
+        TextureShader(struct ShaderPayload &payload);
 };
 
 
 class BumpShader : public PhongShader{
     public:
-        BumpShader(struct& payload);
-        Eigen::Vector3f performShading() {return ShaderPayload.normal * 255.0;};
+        BumpShader(struct ShaderPayload &payload);
+        Eigen::Vector3f performShading() {return payload.normal * 255.0;};
 };
 
 
 class DisplacementShader : public PhongShader{
     public:
-        DisplacementShader(struct& payload);
+        DisplacementShader(struct ShaderPayload &payload);
 };
 
 

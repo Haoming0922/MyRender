@@ -266,6 +266,17 @@ bool TGAImage::set(int x, int y, TGAColor c, float intensity) {
 	return true;
 }
 
+bool TGAImage::set(int x, int y, Eigen::Vector3f c, float intensity) {
+	if (!data || x<0 || y<0 || x>=width || y>=height) {
+		return false;
+	}
+	c[0] = static_cast<unsigned char>(intensity * c[0]);
+	c[1] = static_cast<unsigned char>(intensity * c[1]);
+	c[2] = static_cast<unsigned char>(intensity * c[2]);
+	memcpy(data+(x+y*width)*bytespp, c.data(), bytespp);
+	return true;
+}
+
 int TGAImage::get_bytespp() {
 	return bytespp;
 }
@@ -353,3 +364,9 @@ bool TGAImage::scale(int w, int h) {
 	return true;
 }
 
+
+
+float TGAColor::TGAnorm(){
+	Eigen::Vector3f t = {r, g, b};
+	return t.norm();
+}

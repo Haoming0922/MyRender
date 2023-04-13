@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "triangle.h"
 #include <stdexcept>
 
 Triangle::Triangle(){
@@ -10,8 +10,8 @@ Triangle::Triangle(){
     Color[1] << 0.0, 0.0, 0.0;
     Color[2] << 0.0, 0.0, 0.0;
     
-    Tex[0] << 0.0, 0.0, 0.0;
-    Tex[1] << 0.0, 0.0, 0.0;
+    Tex[0] << 0.0, 0.0;
+    Tex[1] << 0.0, 0.0;
 
     Normal[0] << 0.0, 0.0, 0.0, 0.0;
     Normal[1] << 0.0, 0.0, 0.0, 0.0;
@@ -19,7 +19,7 @@ Triangle::Triangle(){
 }
 
 void Triangle::setPosition(int idx, Eigen::Vector4f p){
-    Position[idx] = c;
+    Position[idx] = p;
 }
 
 void Triangle::setColor(int idx, Eigen::Vector3f c){
@@ -32,6 +32,6 @@ void Triangle::setTex(int idx, Eigen::Vector2f t){
     Tex[idx] = t;
 }
 
-void Triangle::setNormal(int idx, Eigen::Vector3f n){
+void Triangle::setNormal(int idx, Eigen::Vector4f n){
     Normal[idx] = n;
 }

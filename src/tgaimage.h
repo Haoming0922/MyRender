@@ -1,6 +1,7 @@
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
 
+#include <Eigen/Dense>
 #include <fstream>
 
 #pragma pack(push,1)
@@ -57,6 +58,8 @@ struct TGAColor {
 		}
 		return *this;
 	}
+	
+	float TGAnorm();
 
 };
 
@@ -68,7 +71,7 @@ protected:
 	int height;
 	int bytespp;
 
-	bool   load_rle_data(std::ifstream &in);
+	bool load_rle_data(std::ifstream &in);
 	bool unload_rle_data(std::ofstream &out);
 public:
 	enum Format {
@@ -85,6 +88,7 @@ public:
 	bool scale(int w, int h);
 	TGAColor get(int x, int y);
 	bool set(int x, int y, TGAColor c, float intensity);
+	bool set(int x, int y, Eigen::Vector3f c, float intensity);
 	~TGAImage();
 	TGAImage & operator =(const TGAImage &img);
 	int get_width();
@@ -92,6 +96,7 @@ public:
 	int get_bytespp();
 	unsigned char *buffer();
 	void clear();
+
 };
 
 #endif //__IMAGE_H__

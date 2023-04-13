@@ -3,20 +3,22 @@
 
 #include "triangle.h"
 #include "tgaimage.h"
+#include "shader.h"
 #include <algorithm>
 #include <vector>
-#include <eigen/Eigen/Eigen>
+#include <Eigen/Dense>
 
 class Rasterizer{
     public:
-        Rasterizer(int w, int h);
+        Rasterizer(int w, int h, PhongShader& s);
         void rasterizeWorld(std::vector<Triangle*> &triangleList);
-        void rasterizeTriangle(Triangle t, std::vector<Eigen::Vector4f> worldSpacePosition);
+        void rasterizeTriangle(Triangle& t, std::vector<Eigen::Vector4f> worldSpacePosition);
 
-        void setModelView(Eigen::Matrix4f& m);
-        void setProjection(Eigen::Matrix4f& p);
-        void setViewport(Eigen::Matrix4f& v);
-        void setShader(PhongShader& s);
+        void setModelView(const Eigen::Matrix4f& m);
+        void setProjection(const Eigen::Matrix4f& p);
+        void setViewport(const Eigen::Matrix4f& v);
+        
+        void saveResult(std::string path);
         
     private:
         int width, height;

@@ -1,7 +1,7 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include <eigen/Eigen/Eigen>
+#include <Eigen/Dense>
 
 class Triangle{
     public:
@@ -15,7 +15,7 @@ class Triangle{
         void setPosition(int idx, Eigen::Vector4f p);
         void setColor(int idx, Eigen::Vector3f c);
         void setTex(int idx, Eigen::Vector2f t);
-        void setNormal(int idx, Eigen::Vector3f n);
+        void setNormal(int idx, Eigen::Vector4f n);
 };
 
 #endif
