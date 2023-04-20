@@ -2,9 +2,11 @@
 
 based on [GAMES101](https://sites.cs.ucsb.edu/~lingqi/teaching/games101.html) and [tinyrenderer](https://github.com/ssloy/tinyrenderer)
 
+<p float="left">
 <img width='160' height='180' src="img/2023-04-20%20173702.png">
 <img width='180' height='180' src="img/2023-04-20%20173806.png">
 <img width='150' height='180' src="img/2023-04-20%20173737.png">
+</p>
 
 ---
 
